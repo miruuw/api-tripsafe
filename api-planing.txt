@@ -1,0 +1,21 @@
+STANDAR API
+
+{root.api}/{version}/{grouping}/{endpoint}
+contoh: 
+http://api-tripsafe.com/v1/auth/login
+
+======================================================================================================
+
+GROUP: Authentication
+
+[1] Register
+[2] login
+
+GROUP: Kelola Produk
+
+[1] Kelola Kategori
+[2] Kelola Produk
+
+GROUP: Profil Merchant
+
+[1] Profil Merchant

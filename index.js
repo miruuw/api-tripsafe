@@ -1,22 +1,23 @@
 const express = require('express');
+const bodyParser = require('body-parser')
+
 const app = express();
-const productRouter = require('./src/routes/product');
+const productRoutes = require('./src/routes/product');
+const authRoutes = require('./src/routes/auth');
 
+// parse application/json
+app.use(bodyParser.json())
 
-app.use('/', productRouter)
+app.use((req, res, next)=>{
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    next();
+})
+
+// =======================================
+app.use('/v1/customer', productRoutes);
+app.use('/v1/auth', authRoutes);
 
 app.listen(4000);
 
-// require('dotenv').config();
-// //import mongoose
-// const mongoose = require('mongoose');
-
-// //establish connection to database
-// mongoose.connect(
-//     process.env.MONGODB_URI,
-//     { useFindAndModify: false, useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true },
-//     (err) => {
-//         if (err) return console.log("Error: ", err);
-//         console.log("MongoDB Connection -- Ready state is:", mongoose.connection.readyState);
-//     }
-// );
