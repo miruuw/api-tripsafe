@@ -1,7 +1,7 @@
 exports.register = (req, res, next) => {
-    const nama = req.body.nama;
-    const email = req.body.email;
-    const password = req.body.password;
+    let nama = req.body.nama;
+    let email = req.body.email;
+    let password = req.body.password;
     const result = {
         message : 'Register Success',
         data : {
