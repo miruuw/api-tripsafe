@@ -47,8 +47,8 @@ mongoose.connect(process.env.CONNECTION_STRING, {
     .catch((err)=> {
         console.log(err);
     })
-// deklarasi port di 8000
-const port = 8000;
+// deklarasi port di 8080
+const port = 8080;
 app.listen(port, ()=> {
     console.log(`server is running http://localhost:${port}`);
 })
