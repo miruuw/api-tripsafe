@@ -17,6 +17,7 @@ app.use(bodyParser.json());
 app.use(morgan('tiny'));
 // app.use(authJwt());
 // app.use(errorHandler());
+app.use('/public/upload', express.static(__dirname + '/public/uploads'));
 app.use((err, req, res, next) => {
     if (err) {
         res.status(500).json({message: err})
@@ -36,6 +37,7 @@ app.use(`${api}/products`, productRoutes);
 app.use(`${api}/users`, userRoutes);
 app.use(`${api}/orders`, orderRoutes);
 // deklarasi mongoose untuk koneksi ke db compass
+mongoose.set("strictQuery", false);
 mongoose.connect(process.env.CONNECTION_STRING, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -48,7 +50,7 @@ mongoose.connect(process.env.CONNECTION_STRING, {
         console.log(err);
     })
 // deklarasi port di 8080
-const port = 8080;
+const port = 8000;
 app.listen(port, ()=> {
     console.log(`server is running http://localhost:${port}`);
 })

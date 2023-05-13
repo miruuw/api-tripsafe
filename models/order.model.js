@@ -8,10 +8,11 @@ const orderSchema = mongoose.Schema({
     }],
     shippingAddress1: {
         type: String,
-        required: true,
+        required: true
     },
     shippingAddress2: {
-        type: String
+        type: String,
+        required: false
     },
     city: {
         type: String,
