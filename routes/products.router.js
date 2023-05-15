@@ -86,12 +86,21 @@ router.post(`/`, uploadOptions.single('image'), async (req, res) => {
     res.send(product);
 })
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', uploadOptions.single('image'), async (req, res) => {
     if (!mongoose.isValidObjectId(req.params.id)) {
-        res.status(400).send('ID Produk tidak valid!')
+        res.status(400).send('ID Produk tidak valid!');
+        return;
     }
+
     const category = await Category.findById(req.body.category);
-    if (!category) return res.status(400).send('Kategori tidak valid!')
+    if (!category) {
+        res.status(400).send('Kategori tidak valid!');
+        return;
+    }
+
+    const file = req.file;
+    const fileName = file ? req.file.filename : null;
+    const basePath = `${req.protocol}://${req.get('host')}/public/upload/`;
 
     const product = await Product.findByIdAndUpdate(
         req.params.id,
@@ -99,7 +108,7 @@ router.put('/:id', async (req, res) => {
             name: req.body.name,
             description: req.body.description,
             richDescription: req.body.richDescription,
-            image: req.body.image,
+            image: file ? `${basePath}${fileName}` : req.body.image,
             brand: req.body.brand,
             price: req.body.price,
             category: req.body.category,
@@ -109,13 +118,16 @@ router.put('/:id', async (req, res) => {
             isFeatured: req.body.isFeatured,
         },
         { new: true }
-    )
+    );
 
-    if (!product)
-        return res.status(400).send('produk tidak dapat diperbarui!')
+    if (!product) {
+        res.status(400).send('Produk tidak dapat diperbarui!');
+        return;
+    }
 
     res.send(product);
-})
+});
+
 
 router.delete('/:id', (req, res) => {
     Product.findByIdAndRemove(req.params.id).then(product => {

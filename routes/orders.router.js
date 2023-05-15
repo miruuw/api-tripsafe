@@ -45,8 +45,8 @@ router.post('/', async (req, res) => {
         return totalPrice;
     }))
 
-    const totalPrice = totalPrices.reduce((a, b) => a + b, 0)
-    console.log(totalPrices);
+    // const totalPrice = totalPrices.reduce((a, b) => a + b, 0)
+    // console.log(totalPrices);
 
     let order = new Order({
         orderItems: orderItemsIdsResolved,
@@ -94,17 +94,35 @@ router.delete('/:id', (req, res) => {
     })
 })
 
+// router.get('/get/totalsales', async (req, res) => {
+//     const totalSales = await Order.aggregate([
+//         {$group: { _id: null, totalsales : { $sum : '$totalPrice'}}}
+//     ])
+
+//     if(!totalSales){
+//         return res.status(400).send('data order tidak dapat tergenerate!')
+//     }
+
+//     res.send({totalsales: totalSales.pop().totalsales});
+// })
+
 router.get('/get/totalsales', async (req, res) => {
-    const totalSales = await Order.aggregate([
-        {$group: { _id: null, totalsales : { $sum : '$totalPrice'}}}
-    ])
+    try {
+        const totalSales = await Order.aggregate([
+            { $group: { _id: null, totalsales: { $sum: '$totalPrice' } } }
+        ]);
 
-    if(!totalSales){
-        return res.status(400).send('data order tidak dapat tergenerate!')
+        if (totalSales.length === 0) {
+            return res.status(404).send('Data order tidak ditemukan!');
+        }
+
+        res.send({ totalsales: totalSales[0].totalsales });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Terjadi kesalahan saat mengambil total penjualan!');
     }
+});
 
-    res.send({totalsales: totalSales.pop().totalsales});
-})
 
 router.get(`/get/count`, async (req, res)=>{
     const orderCount = await Order.countDocuments();
@@ -115,6 +133,19 @@ router.get(`/get/count`, async (req, res)=>{
     res.send({
         orderCount: orderCount
     })
+})
+
+router.get(`/get/userorders/:userid`, async (req, res) => {
+    const userOrderList = await Order.find({user: req.params.userid}).populate({
+        path: 'orderItems', populate: {
+            path: 'product', populate: 'category'
+        }
+    }).sort({'dateordered': -1});
+
+    if(!userOrderList){
+        res.status(500).json({success: false})
+    }
+    res.send(userOrderList);
 })
 
 module.exports = router;
